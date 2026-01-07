@@ -1,6 +1,7 @@
 package com.cuisto.backend.service;
 
 import com.cuisto.backend.dto.RecipeRequest;
+import com.cuisto.backend.exception.ResourceNotFoundException;
 import com.cuisto.backend.model.Recipe;
 import com.cuisto.backend.repository.RecipeRepository;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +42,7 @@ public class RecipeService {
 
     public Recipe getRecipeById(String id) {
         return recipeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Recipe not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Recipe", "id", id));
     }
 
     public List<Recipe> getRecipesByCuisine(String cuisine) {
@@ -78,6 +79,9 @@ public class RecipeService {
     }
 
     public void deleteRecipe(String id) {
+        if (!recipeRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Recipe", "id", id);
+        }
         recipeRepository.deleteById(id);
     }
 }
